@@ -84,7 +84,7 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       createdAt: Date.now(),
       assignedTo: taskTpl.assignedTo,
       // tags: taskTpl.tags || [],
-      // metadata: taskTpl.metadata,
+      metadata: taskTpl.metadata,
     };
 
     platform.log('criando tarefa com dados:');
