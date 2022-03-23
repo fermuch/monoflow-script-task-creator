@@ -1,4 +1,5 @@
 import * as MonoUtils from "@fermuch/monoutils";
+import { currentLogin, myID } from "@fermuch/monoutils";
 import { Submission, TaskT } from "@fermuch/telematree";
 import * as Eta from "eta";
 
@@ -37,6 +38,10 @@ function compile(tpl: string, submit: Submission, taskId?: string, formId?: stri
     form,
     formId,
     data: env.data || {},
+    device: env.project?.usersManager.users.find((u) => u.$modelId === myID()),
+    deviceName: env.project?.usersManager.users.find((u) => u.$modelId === myID())?.name || env.project?.usersManager.users.find((u) => u.$modelId === myID())?.prettyName || env.project?.usersManager.users.find((u) => u.$modelId === myID())?.deviceName || env.project?.usersManager.users.find((u) => u.$modelId === myID()).$modelId || '',
+    login: currentLogin() && env.project?.logins.find((l) => l.$modelId === currentLogin()),
+    loginName: env.project?.logins?.find((l) => l.$modelId === currentLogin())?.name || currentLogin() || '',
   }, {async: false, cache: false}) as string;
 }
 
@@ -78,7 +83,7 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       updatedAt: Date.now(),
       createdAt: Date.now(),
       assignedTo: taskTpl.assignedTo,
-      // tags: taskTpl.tags || [],
+      tags: taskTpl.tags || [],
       // metadata: taskTpl.metadata,
     };
 
