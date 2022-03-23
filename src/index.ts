@@ -38,8 +38,8 @@ function compile(tpl: string, submit: Submission, taskId?: string, formId?: stri
     form,
     formId,
     data: env.data || {},
-    device: env.project?.usersManager.users.find((u) => u.$modelId === myID()),
-    deviceName: env.project?.usersManager.users.find((u) => u.$modelId === myID())?.name || env.project?.usersManager.users.find((u) => u.$modelId === myID())?.prettyName || env.project?.usersManager.users.find((u) => u.$modelId === myID())?.deviceName || env.project?.usersManager.users.find((u) => u.$modelId === myID()).$modelId || '',
+    device: env.project?.usersManager?.users?.find((u) => u.$modelId === myID()),
+    deviceName: env.project?.usersManager?.users?.find((u) => u.$modelId === myID())?.name || env.project?.usersManager?.users?.find((u) => u.$modelId === myID())?.prettyName || env.project?.usersManager?.users?.find((u) => u.$modelId === myID())?.deviceName || env.project?.usersManager?.users?.find((u) => u.$modelId === myID()).$modelId || '',
     login: currentLogin() && env.project?.logins.find((l) => l.$modelId === currentLogin()),
     loginName: env.project?.logins?.find((l) => l.$modelId === currentLogin())?.name || currentLogin() || '',
   }, {async: false, cache: false}) as string;
