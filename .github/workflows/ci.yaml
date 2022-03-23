@@ -1,0 +1,34 @@
+name: CI Deploy
+on:
+  push:
+    # ignore new branches
+    branches:
+      - "!*"
+    # accept all tags starting with v
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node_version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node_version }}
+      - name: yarn install, build, and test
+        run: |
+          yarn install
+          yarn build
+          yarn test
+        env:
+          CI: true
+      - run: yarn build && node .scripts/deploy.js --force
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
