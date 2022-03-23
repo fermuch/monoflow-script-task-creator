@@ -77,9 +77,9 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       done: false,
       updatedAt: Date.now(),
       createdAt: Date.now(),
-      tags: taskTpl.tags || [],
       assignedTo: taskTpl.assignedTo,
-      metadata: taskTpl.metadata,
+      // tags: taskTpl.tags || [],
+      // metadata: taskTpl.metadata,
     };
 
     platform.log('criando tarefa com dados:');
