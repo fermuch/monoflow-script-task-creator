@@ -58,7 +58,7 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-    fallback: { "stream": false, "http": false, "url": false, "https": false, "zlib": false }
+    fallback: { "stream": false, "http": false, "url": false, "https": false, "zlib": false, "path": false, "fs": false }
   },
   output: {
     filename: 'bundle.js',

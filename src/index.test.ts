@@ -8,6 +8,33 @@ function loadScript() {
 }
 
 describe("onInit", () => {
+  beforeEach(() => {
+    getSettings = () => ({
+      generators: [{
+        triggers: [{
+          when: 'TASK_SUBMIT',
+          id: 'task-id',
+        }, {
+          when: 'FORM_SUBMIT',
+          id: 'form-id',
+        }],
+        tpl: {
+          name: 'Test Task (<%= it.submit.data.name %>)',
+          show: true,
+          assignedTo: '<%= it.data.DEVICE_ID %>',
+          description: '<%= it.task && it.task.name %>',
+          formId: '<%= it.data.DOES_NOT_EXIST || "" %>',
+          order: 1000,
+          icon: '',
+          iconType: 'material',
+          tags: [],
+          webhooks: [],
+          metadata: {},
+        }
+      }],
+    })
+  })
+
   // clean listeners
   afterEach(() => {
     messages.removeAllListeners();
@@ -18,24 +45,79 @@ describe("onInit", () => {
     messages.emit('onInit');
   });
 
-  it('prints "Hello, default name!"', () => {
-    const log = jest.fn();
-    platform.log = log;
-
+  it('triggers on taskId', () => {
+    env.project = {
+      tasksManager: {
+        tasks: [{
+          $modelId: 'task-id',
+          name: 'Test Task From tasksManager',
+        }],
+        create: jest.fn(),
+      }
+    } as never
     loadScript();
 
-    messages.emit('onInit');
-    expect(log).toHaveBeenCalledWith('Hello, default name!');
+    messages.emit('onSubmit', {data: {}} as never, 'task-id', undefined);
+    expect(env.project.tasksManager.create).toHaveBeenCalled();
   });
 
-  it('prints "Hello, custom name!" if given config', () => {
-    const log = jest.fn();
-    platform.log = log;
-    getSettings = () => ({ name: 'custom name' });
-
+  it('triggers on formId', () => {
+    env.project = {
+      tasksManager: {
+        tasks: [{
+          $modelId: 'task-id',
+          name: 'Test Task From tasksManager',
+        }],
+        create: jest.fn(),
+      },
+      formsManager: {
+        forms: [{
+          $modelId: 'form-id',
+          name: 'Test Task From formsManager',
+        }],
+      }
+    } as never
     loadScript();
 
-    messages.emit('onInit');
-    expect(log).toHaveBeenCalledWith('Hello, custom name!');
+    messages.emit('onSubmit', {data: {}} as never, undefined, 'form-id');
+    expect(env.project.tasksManager.create).toHaveBeenCalled();
+  });
+
+  it('does not trigger if there is no match', () => {
+    env.project = {
+      tasksManager: {
+        tasks: [{
+          $modelId: 'task-id',
+          name: 'Test Task From tasksManager',
+        }],
+        create: jest.fn(),
+      }
+    } as never
+    loadScript();
+
+    messages.emit('onSubmit', {data: {}} as never, 'not-a-task-id', 'not-a-form-id');
+    expect(env.project.tasksManager.create).not.toHaveBeenCalled();
+  });
+
+  it('renders template', () => {
+    env.project = {
+      tasksManager: {
+        tasks: [{
+          $modelId: 'task-id',
+          name: 'Test Task From tasksManager',
+        }],
+        create: jest.fn(),
+      }
+    } as never
+    loadScript();
+
+    messages.emit('onSubmit', {data: {name: 'Submit Name'}} as never, 'task-id', undefined);
+    
+    expect(env.project.tasksManager.create).toHaveBeenCalled();
+    const call = (env.project.tasksManager.create as jest.Mock).mock.calls[0];
+    expect(call[0].name).toBe('Test Task (Submit Name)');
+    expect(call[0].description).toBe('Test Task From tasksManager');
+    expect(call[0].assignedTo).toBe('TEST');
+    expect(call[0].formId).toBe('');
   });
 });

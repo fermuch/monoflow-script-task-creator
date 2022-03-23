@@ -1,27 +1,213 @@
 {
-  "name": "monoflow-script-env",
-  "version": "1.18.0",
-  "description": "Script padrão de todos os scripts. Template para criar um script.",
+  "name": "task-creator",
+  "version": "0.0.0",
+  "description": "Script para criar tarefas automaticamente, baseado em regras.",
   "settingsSchema": {
     "display": "form",
+    "settings": {
+      "pdf": {
+        "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+        "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+      }
+    },
     "components": [
       {
-        "label": "Nome",
-        "description": "Nome para saludar",
-        "tableView": true,
-        "key": "name",
-        "type": "textfield",
+        "label": "Tarefas Automaticas",
+        "tableView": false,
+        "templates": {
+          "header": "",
+          "row": "<div class=\"row\">\n      <div class=\"col-sm-2\">\n        {{ row.tpl.name || '' }}\n      </div>\n      {% if (!instance.options.readOnly && !instance.disabled) { %}\n        <div class=\"col-sm-2\">\n          <div class=\"btn-group pull-right\">\n            <button class=\"btn btn-default btn-light btn-sm editRow\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n            {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n              <button class=\"btn btn-danger btn-sm removeRow\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n            {% } %}\n          </div>\n        </div>\n      {% } %}\n    </div>"
+        },
+        "rowDrafts": false,
+        "key": "generators",
+        "type": "editgrid",
+        "displayAsTable": false,
         "input": true,
-        "defaultValue": "User"
+        "components": [
+          {
+            "label": "Ativadores",
+            "reorder": false,
+            "addAnotherPosition": "bottom",
+            "layoutFixed": false,
+            "enableRowGroups": false,
+            "initEmpty": false,
+            "tableView": false,
+            "defaultValue": [
+              {}
+            ],
+            "key": "triggers",
+            "type": "datagrid",
+            "input": true,
+            "components": [
+              {
+                "label": "Ao",
+                "widget": "choicesjs",
+                "tableView": true,
+                "data": {
+                  "values": [
+                    {
+                      "label": "Fechar tarefa",
+                      "value": "TASK_SUBMIT"
+                    },
+                    {
+                      "label": "Enviar formulario",
+                      "value": "FORM_SUBMIT"
+                    }
+                  ]
+                },
+                "validate": {
+                  "required": true
+                },
+                "key": "when",
+                "type": "select",
+                "input": true
+              },
+              {
+                "label": "ID",
+                "tableView": true,
+                "validate": {
+                  "required": true,
+                  "custom": "valid = /^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$/.test(input) ? true : 'ID inválido';"
+                },
+                "key": "id",
+                "customConditional": "show = row.when === 'TASK_SUBMIT' || row.when === 'FORM_SUBMIT';",
+                "type": "textfield",
+                "input": true
+              }
+            ]
+          },
+          {
+            "label": "Template",
+            "tableView": false,
+            "key": "tpl",
+            "type": "container",
+            "input": true,
+            "components": [
+              {
+                "label": "name",
+                "tableView": true,
+                "validate": {
+                  "required": true,
+                  "minLength": 3,
+                  "maxLength": 300
+                },
+                "key": "name",
+                "type": "textfield",
+                "input": true
+              },
+              {
+                "label": "show",
+                "tableView": false,
+                "key": "show",
+                "type": "checkbox",
+                "input": true,
+                "defaultValue": true
+              },
+              {
+                "label": "assignedTo",
+                "tableView": true,
+                "key": "assignedTo",
+                "type": "textfield",
+                "input": true
+              },
+              {
+                "label": "description",
+                "autoExpand": false,
+                "tableView": true,
+                "key": "description",
+                "type": "textarea",
+                "input": true
+              },
+              {
+                "label": "formId",
+                "tableView": true,
+                "validate": {
+                  "custom": "valid = !input || /^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$/.test(input) ? true : 'ID inválido';"
+                },
+                "key": "formId",
+                "type": "textfield",
+                "autoExpand": false,
+                "input": true
+              },
+              {
+                "label": "order",
+                "mask": false,
+                "tableView": false,
+                "delimiter": false,
+                "requireDecimal": false,
+                "inputFormat": "plain",
+                "truncateMultipleSpaces": false,
+                "key": "order",
+                "type": "number",
+                "input": true,
+                "defaultValue": 1000
+              },
+              {
+                "label": "icon",
+                "tableView": true,
+                "key": "icon",
+                "type": "textfield",
+                "input": true,
+                "defaultValue": "crop-square"
+              },
+              {
+                "label": "iconType",
+                "tableView": true,
+                "key": "iconType",
+                "type": "textfield",
+                "input": true,
+                "defaultValue": "material"
+              },
+              {
+                "label": "Tags",
+                "tableView": false,
+                "storeas": "array",
+                "key": "tags",
+                "type": "tags",
+                "input": true
+              },
+              {
+                "label": "Webhooks",
+                "tableView": true,
+                "multiple": true,
+                "validate": {
+                  "custom": "valid = /(http|https):\\/\\/(\\w+:{0,1}\\w*@)?(\\S+)(:[0-9]+)?(\\/|\\/([\\w#!:.?+=&%@!\\-\\/]))?/.test(input) ? true : 'URL Inválida';"
+                },
+                "key": "webhooks",
+                "type": "textfield",
+                "input": true
+              },
+              {
+                "label": "metadata",
+                "keyLabel": "Key",
+                "addAnother": "Adicionar",
+                "tableView": false,
+                "key": "metadata",
+                "type": "datamap",
+                "input": true,
+                "valueComponent": {
+                  "type": "textfield",
+                  "key": "value",
+                  "label": "Value",
+                  "input": true,
+                  "hideLabel": true,
+                  "tableView": true
+                }
+              }
+            ]
+          }
+        ]
       },
       {
-        "type": "button",
         "label": "Submit",
-        "key": "submit",
-        "disableOnInvalid": true,
+        "showValidations": false,
         "block": true,
+        "disableOnInvalid": true,
+        "tableView": false,
+        "key": "submit",
+        "type": "button",
         "input": true,
-        "tableView": false
+        "saveOnEnter": false
       }
     ]
   },
@@ -36,7 +222,7 @@
     "deploy-force": "node .scripts/deploy.js --force",
     "minor": "npm run build && bump minor --commit --tag --push --all",
     "release": "npm run build && bump major --commit --tag --push --all",
-    "test": "jest --silent"
+    "test": "jest"
   },
   "browserslist": [
     "ie 6"
@@ -81,6 +267,7 @@
     "@fermuch/monoutils": "^0.0.37",
     "@fermuch/telematree": "^9.20.0",
     "cross-fetch": "3.1.5",
+    "eta": "^1.12.3",
     "firebase": "9.6.9",
     "lodash": "4.17.21",
     "mobx": "6.5.0"

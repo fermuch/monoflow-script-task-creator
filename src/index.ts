@@ -1,13 +1,76 @@
 import * as MonoUtils from "@fermuch/monoutils";
+import { Submission, TaskT } from "@fermuch/telematree";
+import * as Eta from "eta";
 
 // based on settingsSchema @ package.json
-type Config = Record<string, unknown> & {
-  nome: string;
+type Config = {
+  generators: {
+    triggers: {
+      when: 'TASK_SUBMIT' | 'FORM_SUBMIT';
+      id: string;
+    }[];
+    tpl: {
+      name: string;
+      show: boolean;
+      assignedTo: string;
+      description: string;
+      formId: string;
+      order: number;
+      icon: TaskT['icon'];
+      iconType: TaskT['iconType'];
+      tags: string[];
+      webhooks: string[];
+      metadata: Record<string, string | number | boolean>;
+    };
+  }[];
 }
 
 const conf = new MonoUtils.config.Config<Config>();
 
-messages.on('onInit', function() {
-  const name = conf.get('name', 'default name');
-  platform.log(`Hello, ${name}!`);
+function compile(tpl: string, submit: Submission, taskId?: string, formId?: string): string {
+  const task = taskId && env.project?.tasksManager?.tasks?.find((task) => task.$modelId === taskId);
+  const form = formId && env.project?.formsManager?.forms?.find((form) => form.$modelId === formId);
+  return Eta.render(tpl, {
+    submit,
+    task,
+    taskId,
+    form,
+    formId,
+    data: env.data || {},
+  }, {async: false, cache: false}) as string;
+}
+
+messages.on('onSubmit', function(submit, taskId, formId) {
+  const generators = conf.get('generators', []);
+  for (const generator of generators) {
+    const myTriggers = generator.triggers?.filter(trigger =>
+          (trigger.when === 'TASK_SUBMIT' && trigger.id === taskId)
+      ||  (trigger.when === 'FORM_SUBMIT' && trigger.id === formId)
+    );
+    
+    // we don't have any trigger
+    if (myTriggers.length === 0) {
+      continue;
+    }
+
+    const taskTpl: Config['generators'][0]['tpl'] = {
+      name: compile(generator.tpl.name, submit, taskId, formId) || '',
+      show: generator.tpl.show,
+      assignedTo: compile(generator.tpl.assignedTo, submit, taskId, formId) || '',
+      description: compile(generator.tpl.description, submit, taskId, formId) || '',
+      formId: compile(generator.tpl.formId, submit, taskId, formId) || '',
+      order: generator.tpl.order,
+      icon: compile(generator.tpl.icon, submit, taskId, formId) || '',
+      iconType: (compile(generator.tpl.iconType, submit, taskId, formId) || '') as TaskT['iconType'],
+      tags: generator.tpl.tags,
+      webhooks: generator.tpl.webhooks,
+      metadata: generator.tpl.metadata,
+    };
+
+    env.project.tasksManager.create({
+      ...taskTpl,
+      updatedAt: Number(new Date()),
+      createdAt: Number(new Date()),
+    });
+  }
 });
