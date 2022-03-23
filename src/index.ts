@@ -71,6 +71,7 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       webhooks: generator.tpl.webhooks,
       metadata: generator.tpl.metadata,
     };
+
     const taskData = {
       name: taskTpl.name,
       show: taskTpl.show,
@@ -83,8 +84,9 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       updatedAt: Date.now(),
       createdAt: Date.now(),
       assignedTo: taskTpl.assignedTo,
-      // tags: taskTpl.tags || [],
-      metadata: taskTpl.metadata,
+      tags: Array.isArray(taskTpl.tags) ? [...taskTpl.tags] : [],
+      webhooks: Array.isArray(taskTpl.webhooks) ? [...taskTpl.webhooks] : [],
+      metadata: typeof taskTpl.metadata === 'object' ? {...taskTpl.metadata} : {},
     };
 
     platform.log('criando tarefa com dados:');
