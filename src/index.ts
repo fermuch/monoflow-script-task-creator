@@ -83,7 +83,7 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       updatedAt: Date.now(),
       createdAt: Date.now(),
       assignedTo: taskTpl.assignedTo,
-      tags: taskTpl.tags || [],
+      // tags: taskTpl.tags || [],
       // metadata: taskTpl.metadata,
     };
 
