@@ -67,9 +67,12 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       order: generator.tpl.order,
       icon: compile(generator.tpl.icon, submit, taskId, formId) || '',
       iconType: (compile(generator.tpl.iconType, submit, taskId, formId) || '') as TaskT['iconType'],
-      tags: generator.tpl.tags,
-      webhooks: generator.tpl.webhooks,
-      metadata: generator.tpl.metadata,
+      tags: generator.tpl.tags.map(tag => compile(tag, submit, taskId, formId)),
+      webhooks: generator.tpl.webhooks.map((wh) => compile(wh, submit, taskId, formId)),
+      metadata: Object.keys(generator.tpl.metadata).reduce((acc, key) => {
+        acc[key] = compile(String(generator.tpl.metadata[key]), submit, taskId, formId);
+        return acc;
+      }, {} as Record<string, string | number | boolean>),
     };
 
     const taskData = {
