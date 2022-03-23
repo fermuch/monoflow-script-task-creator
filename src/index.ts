@@ -66,11 +66,25 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       webhooks: generator.tpl.webhooks,
       metadata: generator.tpl.metadata,
     };
+    const taskData = {
+      name: taskTpl.name,
+      show: taskTpl.show,
+      description: taskTpl.description,
+      formId: taskTpl.formId,
+      order: taskTpl.order,
+      icon: taskTpl.icon,
+      iconType: taskTpl.iconType,
+      done: false,
+      updatedAt: Date.now(),
+      createdAt: Date.now(),
+      tags: taskTpl.tags || [],
+      assignedTo: taskTpl.assignedTo,
+      metadata: taskTpl.metadata,
+    };
 
-    env.project.tasksManager.create({
-      ...taskTpl,
-      updatedAt: Number(new Date()),
-      createdAt: Number(new Date()),
-    });
+    platform.log('criando tarefa com dados:');
+    platform.log(taskData);
+
+    env.project.tasksManager.create(taskData);
   }
 });
