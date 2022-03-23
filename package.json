@@ -84,7 +84,17 @@
             "input": true,
             "components": [
               {
-                "label": "name",
+                "html": "<p><span class=\"text-big\"><strong>Como posso definir dados dinámicos?</strong></span></p><p>Todos os campos tipo texto podem ser dinámicos. Um campo dinámico pode ser definido como:</p><blockquote><p>&lt;%= it.data.DEVICE_ID %&gt;</p></blockquote><p>Os <i>&lt;%=</i> e <i>%&gt;</i> indicam que os dados inclusos dentro são dinámicos. Neste exemplo, o campo iria ter o valor do telefone para DEVICE_ID (o identificador do dispositivo).</p><p>Sempre que acessar um dado dinámico, primeiramente é necessário acessar a variável <strong>it</strong>. Essa variável, além de data (os valores que pode ver no debug do telefone no ScriptData), tem:</p><ul><li><strong>data:</strong> valores do telefone, encontra-se no ScriptData. Outros scripts ou dados do telefones podem criar dados no data.</li><li><strong>formId: </strong>identificador do formulário, se o submit tivesse um formulário.</li><li><strong>form:</strong> dados do formulario, se o submit tivesse um <i>formId.</i></li><li><strong>taskId: </strong>identificador da tareafa, se o submit tivesse uma tarefa.</li><li><strong>task:</strong> dados da tarefa, se o submit tivesse um <i>taskId.</i></li><li><strong>submit: </strong>contem os dados do submit atual. Nele, é possível acessar \"<i>data</i>\", com as respostas do formulario (se tiver)</li></ul><p><strong>Exemplos:</strong></p><blockquote><p>Test Task (&lt;%= it.submit.data.name %&gt;)</p></blockquote><blockquote><p>&lt;%= it.data.DEVICE_ID %&gt;</p></blockquote><blockquote><p>&lt;%= it.data.NAO_EXISTE || \"\" %&gt;</p></blockquote><p>Qualquer código javascript pode ser executado dentro dos campos dinámicos.</p>",
+                "label": "Ajuda",
+                "refreshOnChange": false,
+                "key": "ajuda",
+                "type": "content",
+                "input": false,
+                "tableView": false
+              },
+              {
+                "label": "Nome",
+                "tooltip": "Campo dinámico",
                 "tableView": true,
                 "validate": {
                   "required": true,
@@ -104,14 +114,16 @@
                 "defaultValue": true
               },
               {
-                "label": "assignedTo",
+                "label": "Atribuído a",
+                "tooltip": "Campo dinámico.",
                 "tableView": true,
                 "key": "assignedTo",
                 "type": "textfield",
                 "input": true
               },
               {
-                "label": "description",
+                "label": "Descrição",
+                "tooltip": "Campo dinámico.",
                 "autoExpand": false,
                 "tableView": true,
                 "key": "description",
@@ -119,7 +131,8 @@
                 "input": true
               },
               {
-                "label": "formId",
+                "label": "ID de Formulario",
+                "tooltip": "Campo dinámico.",
                 "tableView": true,
                 "validate": {
                   "custom": "valid = !input || /^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$/.test(input) ? true : 'ID inválido';"
@@ -130,33 +143,35 @@
                 "input": true
               },
               {
-                "label": "order",
+                "label": "Ordem",
                 "mask": false,
                 "tableView": false,
+                "defaultValue": 1000,
                 "delimiter": false,
                 "requireDecimal": false,
                 "inputFormat": "plain",
                 "truncateMultipleSpaces": false,
                 "key": "order",
                 "type": "number",
-                "input": true,
-                "defaultValue": 1000
+                "input": true
               },
               {
-                "label": "icon",
+                "label": "Icone",
+                "tooltip": "Campo dinámico.",
                 "tableView": true,
+                "defaultValue": "crop-square",
                 "key": "icon",
                 "type": "textfield",
-                "input": true,
-                "defaultValue": "crop-square"
+                "input": true
               },
               {
-                "label": "iconType",
+                "label": "Tipo de icone",
+                "tooltip": "Campo dinámico.",
                 "tableView": true,
+                "defaultValue": "material",
                 "key": "iconType",
                 "type": "textfield",
-                "input": true,
-                "defaultValue": "material"
+                "input": true
               },
               {
                 "label": "Tags",
@@ -178,7 +193,7 @@
                 "input": true
               },
               {
-                "label": "metadata",
+                "label": "Metadatos",
                 "keyLabel": "Key",
                 "addAnother": "Adicionar",
                 "tableView": false,
