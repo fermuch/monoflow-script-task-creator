@@ -75,7 +75,7 @@
                 "input": true
               },
               {
-                "label": "Respostas",
+                "label": "Perguntas/Respostas",
                 "keyLabel": "Pergunta",
                 "addAnother": "Adicionar",
                 "tableView": false,

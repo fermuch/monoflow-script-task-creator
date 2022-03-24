@@ -9,6 +9,7 @@ type Config = {
     triggers: {
       when: 'TASK_SUBMIT' | 'FORM_SUBMIT';
       id: string;
+      questions?: Record<string, string>;
     }[];
     tpl: {
       name: string;
@@ -47,12 +48,20 @@ function compile(tpl: string, submit: Submission, taskId?: string, formId?: stri
   }, {async: false, cache: false}) as string;
 }
 
+function matchesQuestionAnswers(qa?: Record<string, string>, data?: Record<string, unknown>): boolean {
+  if (!qa) return true;
+  for (const [key, value] of Object.entries(qa)) {
+    if (data[key] !== value) return false;
+  }
+  return true;
+}
+
 messages.on('onSubmit', function(submit, taskId, formId) {
   const generators = conf.get('generators', []);
   for (const generator of generators) {
     const myTriggers = generator.triggers?.filter(trigger =>
           (trigger.when === 'TASK_SUBMIT' && trigger.id === taskId)
-      ||  (trigger.when === 'FORM_SUBMIT' && trigger.id === formId)
+      ||  (trigger.when === 'FORM_SUBMIT' && trigger.id === formId && matchesQuestionAnswers(trigger.questions || {}, submit.data || {}))
     );
     
     // we don't have any trigger
