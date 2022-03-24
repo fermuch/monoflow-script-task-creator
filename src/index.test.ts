@@ -103,6 +103,8 @@ describe("onInit", () => {
     expect(env.project.tasksManager.create).toHaveBeenCalled();
   });
 
+  xit('triggers on form with questions/answers', () => {})
+
   it('does not trigger if there is no match', () => {
     env.project = {
       tasksManager: {
