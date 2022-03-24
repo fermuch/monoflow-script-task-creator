@@ -7,9 +7,10 @@ import * as Eta from "eta";
 type Config = {
   generators: {
     triggers: {
-      when: 'TASK_SUBMIT' | 'FORM_SUBMIT';
+      when: 'TASK_SUBMIT' | 'FORM_SUBMIT' | 'TAG_FOUND';
       id: string;
       questions?: Record<string, string>;
+      tag?: string;
     }[];
     tpl: {
       name: string;
@@ -57,11 +58,19 @@ function matchesQuestionAnswers(qa?: Record<string, string>, data?: Record<strin
 }
 
 messages.on('onSubmit', function(submit, taskId, formId) {
+  const task = taskId && env.project?.tasksManager?.tasks?.find((task) => task.$modelId === taskId);
+  const form = formId && env.project?.formsManager?.forms?.find((form) => form.$modelId === formId);
+  const tags = [
+    ...(task?.tags || []),
+    ...(form?.tags || []),
+  ];
+
   const generators = conf.get('generators', []);
   for (const generator of generators) {
     const myTriggers = generator.triggers?.filter(trigger =>
           (trigger.when === 'TASK_SUBMIT' && trigger.id === taskId)
       ||  (trigger.when === 'FORM_SUBMIT' && trigger.id === formId && matchesQuestionAnswers(trigger.questions || {}, submit.data || {}))
+      ||  (trigger.when === 'TAG_FOUND' && trigger.tag && tags.includes(trigger.tag))
     );
     
     // we don't have any trigger

@@ -17,6 +17,9 @@ describe("onInit", () => {
         }, {
           when: 'FORM_SUBMIT',
           id: 'form-id',
+        }, {
+          when: 'TAG_FOUND',
+          tag: 'tag-id',
         }],
         tpl: {
           name: 'Test Task (<%= it.submit.data.name %>)',
@@ -43,6 +46,23 @@ describe("onInit", () => {
   it('runs without errors', () => {
     loadScript();
     messages.emit('onInit');
+  });
+
+  it('triggers on tag', () => {
+    env.project = {
+      tasksManager: {
+        tasks: [{
+          $modelId: 'task-zaz',
+          name: 'Test Task From tasksManager with tags',
+          tags: ['tag-id'],
+        }],
+        create: jest.fn(),
+      }
+    } as never
+    loadScript();
+
+    messages.emit('onSubmit', {data: {}} as never, 'task-zaz', undefined);
+    expect(env.project.tasksManager.create).toHaveBeenCalled();
   });
 
   it('triggers on taskId', () => {

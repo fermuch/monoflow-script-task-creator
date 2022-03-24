@@ -52,6 +52,10 @@
                     {
                       "label": "Enviar formulario",
                       "value": "FORM_SUBMIT"
+                    },
+                    {
+                      "label": "Enviar submit com uma tag",
+                      "value": "TAG_FOUND"
                     }
                   ]
                 },
@@ -71,6 +75,19 @@
                 },
                 "key": "id",
                 "customConditional": "show = row.when === 'TASK_SUBMIT' || row.when === 'FORM_SUBMIT';",
+                "type": "textfield",
+                "input": true
+              },
+              {
+                "label": "Tag",
+                "tableView": true,
+                "validate": {
+                  "required": true,
+                  "minLength": 3,
+                  "maxLength": 300
+                },
+                "key": "tag",
+                "customConditional": "show = row.when === 'TAG_FOUND';",
                 "type": "textfield",
                 "input": true
               },
