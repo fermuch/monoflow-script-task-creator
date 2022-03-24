@@ -73,6 +73,27 @@
                 "customConditional": "show = row.when === 'TASK_SUBMIT' || row.when === 'FORM_SUBMIT';",
                 "type": "textfield",
                 "input": true
+              },
+              {
+                "label": "Respostas",
+                "keyLabel": "Pergunta",
+                "addAnother": "Adicionar",
+                "tableView": false,
+                "key": "questions",
+                "type": "datamap",
+                "input": true,
+                "validate": {
+                  "required": false
+                },
+                "customConditional": "show = row.when === 'FORM_SUBMIT';",
+                "valueComponent": {
+                  "type": "textfield",
+                  "key": "value",
+                  "label": "Resposta",
+                  "input": true,
+                  "hideLabel": true,
+                  "tableView": true
+                }
               }
             ]
           },
@@ -175,6 +196,7 @@
               },
               {
                 "label": "Tags",
+                "tooltip": "Campo dinámico",
                 "tableView": false,
                 "storeas": "array",
                 "key": "tags",
@@ -183,6 +205,7 @@
               },
               {
                 "label": "Webhooks",
+                "tooltip": "Campo dinámico",
                 "tableView": true,
                 "multiple": true,
                 "validate": {
@@ -194,6 +217,7 @@
               },
               {
                 "label": "Metadatos",
+                "tooltip": "Campo dinámico (só dados)",
                 "keyLabel": "Key",
                 "addAnother": "Adicionar",
                 "tableView": false,
@@ -203,7 +227,7 @@
                 "valueComponent": {
                   "type": "textfield",
                   "key": "value",
-                  "label": "Value",
+                  "label": "Dado",
                   "input": true,
                   "hideLabel": true,
                   "tableView": true
