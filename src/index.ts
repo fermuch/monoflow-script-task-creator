@@ -40,7 +40,9 @@ function compile(tpl: string, submit: Submission, taskId?: string, formId?: stri
     data: env.data || {},
     device: env.project?.usersManager?.users?.find((u) => u.$modelId === myID()),
     deviceName: env.project?.usersManager?.users?.find((u) => u.$modelId === myID())?.name || env.project?.usersManager?.users?.find((u) => u.$modelId === myID())?.prettyName || env.project?.usersManager?.users?.find((u) => u.$modelId === myID())?.deviceName || env.project?.usersManager?.users?.find((u) => u.$modelId === myID()).$modelId || '',
+    deviceId: myID() || '',
     login: currentLogin() && env.project?.logins.find((l) => l.$modelId === currentLogin()),
+    loginId: currentLogin() || '',
     loginName: env.project?.logins?.find((l) => l.$modelId === currentLogin())?.name || currentLogin() || '',
   }, {async: false, cache: false}) as string;
 }
