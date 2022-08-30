@@ -105,7 +105,7 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       formName: form?.name || '',
       originalTags: tags,
       originalLogin: currentLogin() || '',
-      triggers: myTriggers,
+      // triggers: myTriggers,
     }
 
     const taskData = {
