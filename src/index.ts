@@ -31,8 +31,10 @@ type Config = {
 const conf = new MonoUtils.config.Config<Config>();
 
 function compile(tpl: string, submit: Submission, taskId?: string, formId?: string): string {
-  const task = taskId && env.project?.tasksManager?.tasks?.find((task) => task.$modelId === taskId);
-  const form = formId && env.project?.formsManager?.forms?.find((form) => form.$modelId === formId);
+  const task = taskId && env.project?.tasksManager?.tasks?.find((t) => t?.$modelId === taskId);
+  const form = formId && env.project?.formsManager?.forms?.find((f) => f?.$modelId === formId);
+  const device = env.project?.usersManager?.users?.find((u) => u?.$modelId === myID());
+  const login = currentLogin() && env.project?.logins?.find((l) => l?.$modelId === currentLogin());
   return Eta.render(tpl, {
     submit,
     task,
@@ -40,12 +42,12 @@ function compile(tpl: string, submit: Submission, taskId?: string, formId?: stri
     form,
     formId,
     data: env.data || {},
-    device: env.project?.usersManager?.users?.find((u) => u.$modelId === myID()),
-    deviceName: env.project?.usersManager?.users?.find((u) => u.$modelId === myID())?.name || env.project?.usersManager?.users?.find((u) => u.$modelId === myID())?.prettyName || env.project?.usersManager?.users?.find((u) => u.$modelId === myID())?.deviceName || env.project?.usersManager?.users?.find((u) => u.$modelId === myID()).$modelId || '',
+    device,
+    deviceName: device?.name || device?.prettyName || device?.deviceName || device?.$modelId || '',
     deviceId: myID() || '',
-    login: currentLogin() && env.project?.logins.find((l) => l.$modelId === currentLogin()),
+    login,
     loginId: currentLogin() || '',
-    loginName: env.project?.logins?.find((l) => l.$modelId === currentLogin())?.name || currentLogin() || '',
+    loginName: login?.name || currentLogin() || '',
   }, {async: false, cache: false}) as string;
 }
 
@@ -58,8 +60,8 @@ function matchesQuestionAnswers(qa?: Record<string, string>, data?: Record<strin
 }
 
 messages.on('onSubmit', function(submit, taskId, formId) {
-  const task = taskId && env.project?.tasksManager?.tasks?.find((task) => task.$modelId === taskId);
-  const form = formId && env.project?.formsManager?.forms?.find((form) => form.$modelId === formId);
+  const task = taskId && env.project?.tasksManager?.tasks?.find((t) => t?.$modelId === taskId);
+  const form = formId && env.project?.formsManager?.forms?.find((f) => f?.$modelId === formId);
   const tags = [
     ...(task?.tags || []),
     ...(form?.tags || []),
@@ -95,6 +97,16 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       }, {} as Record<string, string | number | boolean>),
     };
 
+    const defaultMetadata = {
+      isCreated: true,
+      taskId: taskId || '',
+      taskName: task?.name || '',
+      formId: formId || '',
+      formName: form?.name || '',
+      originalTags: tags,
+      originalLogin: currentLogin() || '',
+    }
+
     const taskData = {
       name: taskTpl.name,
       show: taskTpl.show,
@@ -109,7 +121,7 @@ messages.on('onSubmit', function(submit, taskId, formId) {
       assignedTo: taskTpl.assignedTo,
       tags: Array.isArray(taskTpl.tags) ? [...taskTpl.tags] : [],
       webhooks: Array.isArray(taskTpl.webhooks) ? [...taskTpl.webhooks] : [],
-      metadata: typeof taskTpl.metadata === 'object' ? {...taskTpl.metadata} : {},
+      metadata: typeof taskTpl.metadata === 'object' ? {...taskTpl.metadata, ...defaultMetadata} : defaultMetadata,
     };
 
     platform.log('criando tarefa com dados:');
