@@ -62,8 +62,9 @@ function matchesQuestionAnswers(qa?: Record<string, string>, data?: Record<strin
 }
 
 messages.on('onSubmit', function(submit, taskId, formId) {
+  taskId = taskId || submit.taskId;
   const task = taskId && env.project?.tasksManager?.tasks?.find((t) => t?.$modelId === taskId);
-  formId = (formId || (task && task.formId));
+  formId = formId || submit.formId || (task && task.formId);
   const form = formId && env.project?.formsManager?.forms?.find((f) => f?.$modelId === formId);
   const tags = [
     ...(task?.tags || []),
