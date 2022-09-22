@@ -103,6 +103,29 @@ describe("onInit", () => {
     expect(env.project.tasksManager.create).toHaveBeenCalled();
   });
 
+  it('triggers on formId from task', () => {
+    env.project = {
+      tasksManager: {
+        tasks: [{
+          $modelId: 'foo-id',
+          name: 'Test Task From tasksManager',
+          formId: 'form-id'
+        }],
+        create: jest.fn(),
+      },
+      formsManager: {
+        forms: [{
+          $modelId: 'form-id',
+          name: 'Test Task From formsManager',
+        }],
+      }
+    } as never
+    loadScript();
+
+    messages.emit('onSubmit', {data: {}} as never, 'foo-id', undefined);
+    expect(env.project.tasksManager.create).toHaveBeenCalled();
+  });
+
   xit('triggers on form with questions/answers', () => {})
 
   it('does not trigger if there is no match', () => {
