@@ -70,6 +70,8 @@ messages.on('onSubmit', function(submit, taskId, formId) {
     ...(form?.tags || []),
   ];
 
+  platform.log(`[taskCreator] onSubmit taskId=${String(taskId)} formId=${formId}`)
+
   const generators = conf.get('generators', []);
   for (const generator of generators) {
     const myTriggers = generator.triggers?.filter(trigger =>
@@ -80,8 +82,11 @@ messages.on('onSubmit', function(submit, taskId, formId) {
     
     // we don't have any trigger
     if (myTriggers.length === 0) {
+      platform.log(`[taskCreator] no trigger matched for generator ${generator.tpl?.name || ''}`)
       continue;
     }
+
+    platform.log(`[taskCreator] triggered generator ${generator.tpl?.name || ''}`)
 
     const taskTpl: Config['generators'][0]['tpl'] = {
       name: compile(generator.tpl.name, submit, taskId, formId) || '',
